@@ -1,3 +1,4 @@
+
 .page {
   --gray-rgb: 0, 0, 0;
   --gray-alpha-200: rgba(var(--gray-rgb), 0.08);
@@ -11,9 +12,19 @@
   align-items: center;
   justify-items: center;
   min-height: 100svh;
-  padding: 80px;
+ margin-top: -2rem;
+ margin-bottom: -2rem;
   gap: 64px;
   font-family: var(--font-geist-sans);
+  font-size: 8em;
+  background-image: url(../../public/background/globalmap.jpg);
+
+}
+.heading{
+  margin-top: 6rem;
+  font-size: 5rem;
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  color: rgb(116, 173, 231);
 }
 
 @media (prefers-color-scheme: dark) {

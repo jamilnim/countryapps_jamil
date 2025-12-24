@@ -3,80 +3,79 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCountries } from "@/lib/features/countries/countriesSlice";
-import {
-  Box,
-  Button,
-  Card,
-  CardActionArea,
-  CardContent,
-  Input,
-  Typography,
-} from "@mui/material";
-import Image from "next/image";
+import { Box, Card, Button, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
+import FavouriteButton from "@/component/FavouriteButton";
 
 const Countries = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  // ✅ Use the correct property name from your slice
   const countries = useSelector((state) => state.countries.countries) || [];
-
-  // move to sigle coutry handler
-
-  const handleCountryClick = (countryName) => {
-    const slug = countryName.toLowerCase().replace(/\s+/g, "-");
-    router.push(`/countries/${encodeURIComponent(slug)}`);
-  };
 
   useEffect(() => {
     dispatch(fetchCountries());
   }, [dispatch]);
 
-  console.log(countries);
+  const handleCountryClick = (name) => {
+    const slug = name.toLowerCase().replace(/\s+/g, "-");
+    router.push(`/countries/${slug}`);
+  };
 
   return (
-    <Box
-      display={"flex"}
-      justifyContent={"center"}
-      alignItems={"center"}
-      flexWrap={"wrap"}
-      gap={"10px"}
-    >
-      {countries.length > 0 ? (
-        countries.map((country, idx) => (
-          <Card
-            key={country.name.common}
-            sx={{
-              padding: "1px",
-              width: "300px",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "300px",
-            }}
-          >
-            <img src={country.flags.svg} width={100} />
-            <br />
-            {country.name.common} <br />
-            {country.area}
-            <br />
-            {idx + 1}/{countries.length}
-            <br />
-            <Button
-              variant="outlined"
-              color="success"
-              size="medium"
-              onClick={() => handleCountryClick(country.name.common)}
+    <Box display="flex" flexWrap="wrap" gap={2} justifyContent="center">
+      {countries.length === 0 && <Typography>Loading countries...</Typography>}
+
+      {countries.map((country) => {
+       
+        const key = country.cca3 || country.cca2 || country.name.common;
+
+        return (
+          <React.Fragment key={key}>
+            <Card
+              sx={{
+                width: 280,
+                padding: 2,
+                textAlign: "center",
+              }}
             >
-              Check detail
-            </Button>
-          </Card>
-        ))
-      ) : (
-        <p>Loading countries...</p>
-      )}
+              <img
+                src={country.flags?.svg || ""}
+                alt={country.name?.common || "Country"}
+                width={100}
+              />
+
+              <Typography variant="h6">
+                {country.name?.common || "Unknown"}
+              </Typography>
+
+              <Typography variant="body2">
+                Area: {country.area || "N/A"}
+              </Typography>
+
+              <FavouriteButton
+                country={{
+                  code:
+                    country.cca3 ?? `${country.name.common}-${country.area}`,
+                  name: country.name.common,
+                  area: country.area,
+                  flag: country.flags.svg,
+                }}
+              />
+
+              <Button
+                variant="outlined"
+                color="success"
+                fullWidth
+                sx={{ mt: 1 }}
+                onClick={() => handleCountryClick(country.name?.common || "")}
+              >
+                Check detail
+              </Button>
+            </Card>
+          </React.Fragment>
+        );
+      })}
     </Box>
   );
 };
